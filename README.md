@@ -1,3 +1,6 @@
+# Requirements
+Python (Tested on 3.13.7)
+
 # Usage
 1. Run Da-Funny.bat (Might be reduntant, but I like to have .bat).
 2. Select decode.
