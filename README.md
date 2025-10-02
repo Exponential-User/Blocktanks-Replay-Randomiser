@@ -12,4 +12,4 @@ Python (Tested on 3.13.7)
 9. After it finishes changing the values, Select encode.
 10. Choose your file name.
 
-And it's done, now you can import your modified replay to Blocktanks.net, Make sure you have `Record Match Replays` enabled to import replays.
+And it's done, now you can import your randomized replay to Blocktanks.net, Make sure you have `Record Match Replays` enabled to import replays.
