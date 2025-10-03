@@ -42,7 +42,7 @@ if errorlevel 2 (
     set /p option="Use data (Still testing), aim (Your aim only), or bullets (bullets not yet implemented): "
     set /p minval="Enter minimum random value (negative integer): "
     set /p maxval="Enter maximum random value (positive integer): "
-    set /p coloumn="Column to randomize (1-13): "
+    set /p coloumn="Column to randomize (1-13, not 4): "
     if /I "!option!" NEQ "data" if /I "!option!" NEQ "aim" if /I "!option!" NEQ "bullets" goto :error
     echo.
     echo SENT: !option! !minval! !maxval! randomize * * !coloumn!

@@ -1,0 +1,14 @@
+Coloum info (0-12) in binaryBuffer:
+0 = ??
+1 = ??
+2 = ??
+3 = User ID (From the idPool)
+4 = Player Alpha (Transparency, if it's 0, it Makes them dissapear and spectate camera will go crazy)
+5 = ??
+6 = ??
+7 = ??
+8 = X position
+9 = Y position
+10 = ??
+11 = angle??
+12 = ??

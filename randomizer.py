@@ -16,7 +16,8 @@ if not len(sys.argv) == 0:
 def encoder(x): # x = filename
     try:
         x
-    except NameError:
+    except (NameError, ValueError):
+        print("Warning: Missing or invalid arguments for encoder, restarting input prompts...\n")
         x = input("IMPORTANT: JSON must be in the same directory as this encoder.\n\nEnter the output .btnks file name (without extension): ")
 
     if not x.endswith('.btnks'):
@@ -44,10 +45,11 @@ def encoder(x): # x = filename
 def decoder(x, x2): # x = filename, x2 = pretty print (yes/no)
     try:
         x
-        # x2
-    except NameError:
+        x2
+    except (NameError, ValueError):
+        print("Warning: Missing or invalid arguments for decoder, restarting input prompts...\n")
         x = input("IMPORTANT: The .btnks file must be in the same directory as this decoder.\n\nEnter the .btnks file name (with extension): ")
-        # x2 = input("Do you want to pretty-print the JSON output? (yes/no): ").strip().lower()
+        x2 = input("Do you want to pretty-print the JSON output? (yes/no): ").strip().lower()
         
     # Step 1: Read the compressed file
     with open(x, 'rb') as f:
@@ -75,20 +77,23 @@ def randomizer(var1, var2, var3, var7): # var1 = function option, var2 = min ran
         var3 = int(var3)
         var7 = int(var7)
     except (NameError, ValueError):
+        print("Warning: Missing or invalid arguments for randomizer, restarting input prompts...\n")
         var1 = input("Enter function option (data, aim, bullets): ").strip().lower()
         var2 = int(input("Enter minimum random value (negative integer): "))
         var3 = int(input("Enter maximum random value (positive integer): "))
-        var7 = int(input("Enter column to randomize (1-13) or leave blank for all except user ID: ").strip())
-        
+        var7 = int(input("Enter column to randomize (1-13, not 4) or leave blank for all except user ID (4): ").strip())
 
     with open('output.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-
     if var1 == "data":
         # Add/subtract random value to each data value except user ID
         for entry in data.get('binaryBuffer', []):
-            if var7 is not None:
+            if var7 != (None, "", 0):
+                if var7 == 5 and (var2 < 0 or var3 > 1):
+                    print("Column 5 (alpha) can only be randomized with 0 to 1.")
+                    break
+                    
                 try:
                     col = int(var7-1)  # Convert to 0-based index
                     if 0 <= col < len(entry['data']):
@@ -159,7 +164,7 @@ if __name__ == "__main__":
     elif var4 == "decode":
         if not var6.endswith('.btnks'):
             var6 = var6 + '.btnks'
-        decoder(var6, None)
+        decoder(var6, var5 if var5 in ['yes', 'no'] else 'no')
     elif var4 == "randomize":
         randomizer(var1, var2, var3, var7)
     elif len(sys.argv) == 0:
