@@ -1,3 +1,5 @@
+Warning: Might cause seizures
+
 # Requirements
 Python (Tested on 3.13.7)
 
