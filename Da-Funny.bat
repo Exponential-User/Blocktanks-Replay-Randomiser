@@ -30,8 +30,8 @@ if errorlevel 3 (
     if "!filename1!"=="" goto :error
     if /I "!filename1:~-6!"==".btnks" goto :error
     echo.
-    echo SENT: * * * encode * !filename1!.btnks
-    python randomizer.py None None None encode None !filename1!
+    echo SENT: * * * encode * !filename1! *
+    python randomizer.py None None None encode None "!filename1!" None
     goto begin
 )
 
@@ -42,10 +42,12 @@ if errorlevel 2 (
     set /p option="Use data (Still testing), aim (Your aim only), or bullets (bullets not yet implemented): "
     set /p minval="Enter minimum random value (negative integer): "
     set /p maxval="Enter maximum random value (positive integer): "
+    set /p coloumn="Column to randomize (1-13): "
     if /I "!option!" NEQ "data" if /I "!option!" NEQ "aim" if /I "!option!" NEQ "bullets" goto :error
     echo.
-    echo SENT: !option! !minval! !maxval! randomize * *
-    python randomizer.py !option! !minval! !maxval! randomize None None
+    echo SENT: !option! !minval! !maxval! randomize * * !coloumn!
+    python randomizer.py !option! !minval! !maxval! randomize None None !coloumn!
+    pause
     goto begin
 )
 
@@ -54,12 +56,12 @@ if errorlevel 1 (
     echo.
     echo ^(1^) Decode
     set /p "filename2=Enter the filename (with .btnks extension): "
-    set /p "prepri=Pretty-print the JSON output? (yes/no): "
+    set /p "prepri=Pretty-print the JSON output? (yes/no [default: no]): "
     if /I "!filename2:~-6!" NEQ ".btnks" goto :error
-    if /I "!prepri!" NEQ "yes" if /I "!prepri!" NEQ "no" set prepri="no"
+    if /I "!prepri!" NEQ "yes" if /I "!prepri!" NEQ "no" set "prepri=no"
     echo.
-    echo SENT: * * * decode * !filename2!
-    python randomizer.py None None None decode !prepri! !filename2!
+    echo SENT: * * * decode !prepri! !filename2! *
+    python randomizer.py None None None decode !prepri! "!filename2!" None
     goto begin
 )
 

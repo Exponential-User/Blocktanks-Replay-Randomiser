@@ -1,8 +1,7 @@
 import json, random, sys, zlib
 # Usage: run the Da-Funny.bat file and follow the prompts
 
-print("Funny BT replay modifier/randomizer by UnknownUser\n\n"
-      f"Running in: {__name__}\n\n")
+print("Funny BT replay modifier/randomizer by UnknownUser\n\n")
 
 if not len(sys.argv) == 0:
     var1 = sys.argv[1] # options for randomization (String | required for randomizer)*
@@ -11,6 +10,7 @@ if not len(sys.argv) == 0:
     var4 = sys.argv[4] # encode/decode/randomize (String | Required)*
     var5 = sys.argv[5] # pretty print (yes/no | Optional)
     var6 = sys.argv[6] # filename (String | Required for encoder/decoder)*
+    var7 = sys.argv[7] # coloum for data randomization (int | Optional)
     # * = These vars are mostly required but can be optional since there is a system in-place to user-input them if not provided.
 
 def encoder(x): # x = filename
@@ -26,7 +26,7 @@ def encoder(x): # x = filename
     with open('output.json', 'r', encoding='utf-8') as f:
         json_obj = json.load(f)
 
-    # Convert JSON to a regular string (includes default spacing)
+    # Convert JSON to a regular string
     json_string = json.dumps(json_obj)
 
     # Encode to UTF-8 bytes
@@ -68,15 +68,17 @@ def decoder(x, x2): # x = filename, x2 = pretty print (yes/no)
     with open('output.json', 'w', encoding='utf-8') as f:
         f.write(pretty_json if x2 == "yes" else text)
 
-def randomizer(var1, var2, var3): # var1 = function option, var2 = min random, var3 = max random
+def randomizer(var1, var2, var3, var7): # var1 = function option, var2 = min random, var3 = max random, var7 = coloum for data randomization
     try:
         var1
         var2 = int(var2)
         var3 = int(var3)
-    except NameError or ValueError:
+        var7 = int(var7)
+    except (NameError, ValueError):
         var1 = input("Enter function option (data, aim, bullets): ").strip().lower()
         var2 = int(input("Enter minimum random value (negative integer): "))
         var3 = int(input("Enter maximum random value (positive integer): "))
+        var7 = int(input("Enter column to randomize (1-13) or leave blank for all except user ID: ").strip())
         
 
     with open('output.json', 'r', encoding='utf-8') as f:
@@ -86,12 +88,24 @@ def randomizer(var1, var2, var3): # var1 = function option, var2 = min random, v
     if var1 == "data":
         # Add/subtract random value to each data value except user ID
         for entry in data.get('binaryBuffer', []):
-            for i in range(len(entry['data'])):
-                print(str(entry['data'][i]))
-                if i != 3:
-                    entry['data'][i] += random.randint(var2, var3)
+            if var7 is not None:
+                try:
+                    col = int(var7-1)  # Convert to 0-based index
+                    if 0 <= col < len(entry['data']):
+                        print(str(entry['data'][col]))
+                        entry['data'][col] += random.randint(var2, var3)
+                        print("-> " + str(entry['data'][col]))
+                    else:
+                        print(f"Column index {col} out of range for entry['data']")
+                except (ValueError, TypeError):
+                    print(f"Invalid column index: {var7}")
+            else:
+                for i in range(len(entry['data'])):
+                    print(str(entry['data'][i]))
+                    if i != 3:
+                        entry['data'][i] += random.randint(var2, var3)
         with open('output.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4)
+            json.dump(data, f)
 
     elif var1 == "aim":
         # Add/subtract random value to each aim angle
@@ -100,7 +114,7 @@ def randomizer(var1, var2, var3): # var1 = function option, var2 = min random, v
             entry['angle'] = random.randint(var2, var3)
             print("-> " + str(entry['angle']))
         with open('output.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4)
+            json.dump(data, f)
 
     elif var1 == "bullets":
         # Placeholder: bullets not yet identified
@@ -147,10 +161,10 @@ if __name__ == "__main__":
             var6 = var6 + '.btnks'
         decoder(var6, None)
     elif var4 == "randomize":
-        randomizer(var1, var2, var3)
+        randomizer(var1, var2, var3, var7)
     elif len(sys.argv) == 0:
         backupMain()
     else:
         print("Invalid arguments for var4. Use 'encode', 'decode', or 'randomize'.")
     
-    input("Press Enter to exit...")
+    input("Press Enter to exit/continue...")
