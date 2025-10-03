@@ -9,7 +9,7 @@ Python (Tested on 3.13.7)
 3. Enter the file name, Must also include the `.btnks` extention.
 5. Then choose if you want to pretty-print.
 6. After all of that select randomize.
-7. select any option.
+7. select any option (aim is only your aim, not everyone's aim).
 8. Enter your maximum and minimal values.
 9. After it finishes changing the values, Select encode.
 10. Choose your file name.
