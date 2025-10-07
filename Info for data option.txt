@@ -1,14 +1,67 @@
-Coloum info (0-12) in binaryBuffer:
-0 = ??
-1 = ??
-2 = ??
-3 = User ID (From the idPool)
-4 = Player Alpha (Transparency, if it's 0, it Makes them dissapear and spectate camera will go crazy)
-5 = ??
-6 = ??
-7 = ??
-8 = X position
-9 = Y position
-10 = ??
-11 = angle??
-12 = ??
+Coloumn Info:
+    1  =  X HIGHBYTE
+    2  =  Y HIGHBYTE
+    3  =  X LOWBYTE
+    4  =  Y LOWBYTE
+    5  =  vX
+    6  =  vY
+    7  =  Arm angle
+
+
+----- CLOCK DATA -----
+    0  =  Clock1
+    1  =  CLock2
+    2  =  Clock3
+----- TANK COUNT -----
+    3  =  Amount of tanks
+----- TANK DATA -----
+    4 + i  =   User ID (From the idPool)
+    5 + i  =   X position High Byte
+    6 + i  =   Y position High Byte
+    7 + i  =   X position Low Byte
+    8 + i  =   Y position Low Byte
+    9 + i  =   X Velocity
+    10 + i =   Y Velocity
+    11 + i =   Arm angle
+[Then repeatedly skips 8 from 4 (Amount of skips are defined by tank count)]: i = 4; i += 8;
+right after these skips = Amount of flags
+----- FLAG DATA -----
+Not yet implemented
+
+
+----- MINIMUM AND MAXIMUM -----
+(These are important if only you're running the python file only)
+
+Arm angle:
+    Min 50  = -180
+    Max 230 =  180
+
+vX, vY:
+    128 = 0
+
+    tankSpeed(.5):
+        Min 108  = -4
+        Max 148  =  4
+    tankSpeed(.75):
+        Min 98  = -6
+        Max 158 =  6
+    tankSpeed(1):
+        Min 88  = -8
+        Max 168 =  8
+    tankSpeed(1.5):
+        Min 68  = -12
+        Max 188 =  12
+    tankSpeed(2):
+        Min 48  = -14
+        Max 208 =  14
+
+[You have to use math to get the real values for these, hehehe >:)]
+
+X HIGHBYTE, Y HIGHBYTE:
+    Min: 0
+    Max: 30
+
+X LOWBYTE, Y LOWBYTE (3x3):
+    Min: 0
+    Max: 255
+

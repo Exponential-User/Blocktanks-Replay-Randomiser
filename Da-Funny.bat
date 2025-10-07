@@ -16,11 +16,25 @@ echo [2] Randomize
 echo.
 echo [3] Encode
 echo.
-echo [4] exit
+echo [4] Acqiure Usernames and Ids
+echo.
+echo [5] exit
 echo.
 
-choice /c 1234 /n /m "Enter your choice:"
-if errorlevel 4 goto :end
+choice /c 12345 /n /m "Enter your choice:"
+if errorlevel 5 goto :end
+
+if errorlevel 4 (
+    cls
+    echo.
+    echo ^(4^) Acqiure Usernames and Ids
+    echo.
+    echo SENT: * * * acqiureUsernames * * * * *
+    python randomizer.py None None None acqiureUsernames None None None None None
+    set "filename3=userlist.txt"
+    pause
+    goto begin
+)
 
 if errorlevel 3 (
     cls
@@ -30,23 +44,73 @@ if errorlevel 3 (
     if "!filename1!"=="" goto :error
     if /I "!filename1:~-6!"==".btnks" goto :error
     echo.
-    echo SENT: * * * encode * !filename1! *
-    python randomizer.py None None None encode None "!filename1!" None
+    echo SENT: * * * encode * !filename1! * * *
+    python randomizer.py None None None encode None "!filename1!" None None None
     goto begin
 )
 
 if errorlevel 2 (
     cls
+    if not exist "output.json" (
+        echo.
+        echo Error: output.json not found. Please run the Decode option first to generate this file.
+        pause
+        goto begin
+    )
     echo.
     echo ^(3^) Randomize
-    set /p option="Use data (Still testing), aim (Your aim only), or bullets (bullets not yet implemented): "
-    set /p minval="Enter minimum random value (negative integer): "
-    set /p maxval="Enter maximum random value (positive integer): "
-    set /p coloumn="Column to randomize (1-13, not 4): "
-    if /I "!option!" NEQ "data" if /I "!option!" NEQ "aim" if /I "!option!" NEQ "bullets" goto :error
+    set /p option="Use data (Still testing), or bullets (bullets not yet implemented): "
+    if /I "!option!" EQU "data" (
+        echo.
+        echo Usernames and IDs from userlist.txt:
+        if not exist "userlist.txt" (
+            echo Error: userlist.txt not found. Please run the Acqiure Usernames and Ids option first to generate this file.
+            pause
+            goto begin
+        ) else (
+            if not defined !filename3! if "!filename!"=="" set "filename3=userlist.txt"
+        )
+        set i=0
+        for /f "tokens=1-2 delims=," %%a in (!filename3!) do (
+            set /a i+=1
+            set "usernames!i!=%%a"
+            set "userID!i!=%%b"
+            echo Username: %%a, ID: %%b
+        )
+        echo.
+        set /p "username=Enter the username or id to randomize them (case-insensitive): "
+        set /p "coloumn=Column to randomize (1-7): "
+        set "id="
+        for %%a in (a b c d e f g h i j k l m n o p q r s t u v w x y z) do (
+            set "username=!username:%%a=%%a!"
+        )
+        set /a isNumeric=!username! 2>nul
+        if /I !isNumeric! equ !username! (
+            for /L %%i in (1,1,!i!) do (
+                if "!username!"=="!userID%%i!" set "id=!userID%%i!"
+            )
+        ) else (
+            for /L %%i in (1,1,!i!) do (
+                if "!username!"=="!usernames%%i!" set "id=!userID%%i!"
+            )
+        )
+    )
+    if /I "!option!" EQU "data" (
+        python randomizer.py None None None getMinMax None None !coloumn! None
+        for /f "tokens=1,2 delims=:" %%a in (minmax.txt) do (
+            if "%%a"=="Min" set "min=(min %%b)"
+            if "%%a"=="Max" set "max=(max %%b)"
+        )
+    ) else ( rem Aim
+        set "min= (min 0)"
+        set "max= (max 360)"
+    )
+    set /p minval="Enter minimum random value!min!: "
+    set /p maxval="Enter maximum random value!max!: "
+    if /I "!option!" NEQ "data" if /I "!option!" NEQ "bullets" goto :error
     echo.
-    echo SENT: !option! !minval! !maxval! randomize * * !coloumn!
-    python randomizer.py !option! !minval! !maxval! randomize None None !coloumn!
+    echo SENT: !option! !minval! !maxval! randomize * * !coloumn! !id!
+    python randomizer.py !option! !minval! !maxval! randomize None None !coloumn! !id!
     pause
     goto begin
 )
@@ -60,8 +124,8 @@ if errorlevel 1 (
     if /I "!filename2:~-6!" NEQ ".btnks" goto :error
     if /I "!prepri!" NEQ "yes" if /I "!prepri!" NEQ "no" set "prepri=no"
     echo.
-    echo SENT: * * * decode !prepri! !filename2! *
-    python randomizer.py None None None decode !prepri! "!filename2!" None
+    echo SENT: * * * decode !prepri! !filename2! * * *
+    python randomizer.py None None None decode !prepri! "!filename2!" None None None
     goto begin
 )
 
