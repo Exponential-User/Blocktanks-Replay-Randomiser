@@ -114,6 +114,7 @@ def randomizer(var1, var2, var3, var7, var8):
         total_entries = 0
 
         replayHost = data.get('replayHost')  # a string of the host's Username
+        col = int(var7) if var7 and str(var7).strip() not in ('', '0', 'None') else None
         
         if validateHostID(replayHost, var8) is not None and col == 7:
             for entry in data.get('aimBuffer', []):
@@ -154,8 +155,7 @@ def randomizer(var1, var2, var3, var7, var8):
                 try:
                     if str(player_id) == str(var8) or idPool.get(player_id, None) == var8:
                         # Randomise X, Y, vX, vY bytes
-                        if var7 != 0 or var7 is not None: # Check if a specific column is provided
-                            col = int(var7)
+                        if col is not None: # Check if a specific column is provided
                             if col in [1, 2, 3, 4, 5, 6, 7]:  # Valid columns to randomize
                                 # if validateHostID(replayHost, var8) is not None and col == 7:
                                 #     print(f"Skipping angle randomization for player '{var8}' as they are the replay host.")
@@ -357,8 +357,8 @@ def backupMain():
                 v4 = int(col_input) if col_input else 0
                 acqiureUsernames(True)
                 v5 = input("Enter the player name or ID to modify: ").strip().lower()
-                string1 = f" (Min: {getMinMax(v4, None, None, "min")})"
-                string2 = f" (Max: {getMinMax(v4, None, None, "max")})"
+                string1 = f" (Min: {getMinMax(v4, None, None, 'min')})"
+                string2 = f" (Max: {getMinMax(v4, None, None, 'max')})"
             v2 = input(f"Enter minimum random value{string1}: ").strip()
             v3 = input(f"Enter maximum random value{string2}: ").strip()
             randomizer(v1, v2, v3, v4, v5)
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         acqiureUsernames(True)
     elif var4 == "getMinMax":
         with open('minmax.txt', 'w', encoding='utf-8') as f:
-            f.write(f"Min:{getMinMax(int(var7), None, None, "min")}\nMax:{getMinMax(int(var7), None, None, "max")}")
+            f.write(f"Min:{getMinMax(int(var7), None, None, 'min')}\nMax:{getMinMax(int(var7), None, None, 'max')}")
     elif len(sys.argv) <= 1:
         backupMain()
     else:
