@@ -101,9 +101,6 @@ if errorlevel 2 (
             if "%%a"=="Min" set "min=(min %%b)"
             if "%%a"=="Max" set "max=(max %%b)"
         )
-    ) else ( rem Aim
-        set "min= (min 0)"
-        set "max= (max 360)"
     )
     set /p minval="Enter minimum random value!min!: "
     set /p maxval="Enter maximum random value!max!: "

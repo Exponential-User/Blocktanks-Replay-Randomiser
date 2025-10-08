@@ -81,7 +81,7 @@ def decoder(x, x2):  # x = filename, x2 = pretty print (yes/no)
 def randomizer(var1, var2, var3, var7, var8):
     with open('output.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
-        
+
     acqiureUsernames(False)  # make sure usernames were not the previous ones
 
     try:
@@ -99,7 +99,7 @@ def randomizer(var1, var2, var3, var7, var8):
 
     if var1 == "data":
         print(f"\nRandomizing tank data for player '{var8}' between {var2} and {var3}...\n")
-        
+
         if idPool == {}:
             index = 2
             # Loop through eventBuffer to find idPool entries
@@ -115,19 +115,19 @@ def randomizer(var1, var2, var3, var7, var8):
 
         replayHost = data.get('replayHost')  # a string of the host's Username
         col = int(var7) if var7 and str(var7).strip() not in ('', '0', 'None') else None
-        
+
         if validateHostID(replayHost, var8) is not None and col == 7:
             for entry in data.get('aimBuffer', []):
-                entry['angle'] = random.randint(var2, var3)
+                entry['angle'] = random.randint(map_to_angle(var2), map_to_angle(var3))
             with open('output.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, separators=(',', ':'))
-        
+
         # Get the user Id in idPool and sets var8 to the ID if var8 contains a username
         if not var8.isdecimal():
             print("Username detected changing to matching user ID")
             if var8 in idPool:
                 var8 = idPool[var8]
-        
+
         for entry in data.get('binaryBuffer', []):
             if not isinstance(entry.get('data'), list):
                 continue
@@ -211,7 +211,7 @@ def acqiureUsernames(switch):
             if username not in idPool or idPool[username] != user_id_value:
                 idPool[username] = user_id_value
         index += 1
-    
+
     replayHost = data.get('replayHost')  # a string of the host's Username
 
     # Save to userlist.txt for the batch script to read off of
@@ -223,7 +223,7 @@ def acqiureUsernames(switch):
     if switch:
         print(f"Replay host (Creator) is: {replayHost}")
         print(f"Reply host ID is: {validateHostID(replayHost, replayHost)}\n")
-    
+
     # print("---- MAP TEST ----")
     # getMap()
 
@@ -259,14 +259,14 @@ def getMinMax(v, randMin, randMax, oneNum):
     min = 0
     max = 0
     tankSpeed = getTankSpeed()
-    
+
     if randMin is None or randMax is None:
         min = 0
-        if v == 1 or v == 2:
+        if v == 1 or v == 2:  # X, Y high byte
             max = 30
-        elif v == 3 or v == 4:
+        elif v == 3 or v == 4:  # X, Y low byte
             max = 255
-        elif v == 5 or v == 6:
+        elif v == 5 or v == 6:  # Tank velocity's (vX, vY)
             if not once: print("Min and Max are only the values you can input.")
             once = True
             if tankSpeed == 0.5:
@@ -284,10 +284,10 @@ def getMinMax(v, randMin, randMax, oneNum):
             elif tankSpeed == 2:
                 min = 48
                 max = 208
-        elif v == 7:
+        elif v == 7: # Tank arm angle
             min = 50
             max = 230
-        else: 
+        else:  # default Max value
             max = 255
 
         if str(oneNum).lower() == "min":
@@ -296,19 +296,19 @@ def getMinMax(v, randMin, randMax, oneNum):
             return max
 
         return min, max
-    
+
     if v == 1:
-        min = randMin if 0 < randMin < 10 else random.randint(0, 10)
-        max = randMax if 11 < randMax < 30 else random.randint(11, 30)
+        min = randMin if 0 < randMin < randMax else random.randint(0, randMin)
+        max = randMax if randMin < randMax < 30 else random.randint(randMax, 30)
     elif v == 2:
-        min = randMin if 0 < randMin < 10 else random.randint(0, 10)
-        max = randMax if 11 < randMax < 30 else random.randint(11, 30)
+        min = randMin if 0 < randMin < randMax else random.randint(0, randMin)
+        max = randMax if randMin < randMax < 30 else random.randint(randMax, 30)
     elif v == 3:
-        min = (var2 if 0 < var2 < 126 else random.randint(0, 126))
-        max = (var3 if 126 < var3 < 255 else random.randint(127, 255))
+        min = randMin if 0 < randMin < randMax else random.randint(0, randMin)
+        max = randMax if randMin < randMax < 255 else random.randint(randMax, 255)
     elif v == 4:
-        min = (var2 if 0 < var2 < 126 else random.randint(0, 126))
-        max = (var3 if 126 < var3 < 255 else random.randint(127, 255))
+        min = randMin if 0 < randMin < randMax else random.randint(0, randMin)
+        max = randMax if randMin < randMax < 255 else random.randint(randMax, 255)
     elif v == 5:
         min = randMin
         max = randMax
@@ -326,13 +326,21 @@ def getMinMax(v, randMin, randMax, oneNum):
         return min
     elif str(oneNum).lower() == "max":
         return max
-    
+
     return min, max
+
+def map_to_angle(v):
+    v = int(v)
+    if v < 50:
+        v = 50
+    elif v > 230:
+        v = 230
+    return 2 * (v - 50)
     
 def getTankSpeed():
     with open('output.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
-    
+
     speed = data.get('eventBuffer', [])[0]['data']['config'].get('match_general_tankSpeed', 1)
     return speed
 
