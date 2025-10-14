@@ -101,7 +101,7 @@ def randomizer(var1, var2, var3, var7, var8):
         replayVersion = data.get('replayVersion') # a string of the replay version
 
         if replayVersion != '1.0.2':
-            print("Replay version not supported")
+            print(f"Replay version is not supported\nReplay Version: {replayVersion}")
             input("Press enter to exit...")
             return
 
@@ -405,4 +405,5 @@ if __name__ == "__main__":
     else:
         print("Invalid arguments for var4. Use 'encode', 'decode', 'randomize' or 'acqiureUsernames'.")
     if len(sys.argv) <= 1:
+
         input("Press Enter to exit/continue...")
