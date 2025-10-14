@@ -98,8 +98,15 @@ def randomizer(var1, var2, var3, var7, var8):
         var3 = int(input("Enter maximum random value (positive integer): "))
 
     if var1 == "data":
-        print(f"\nRandomizing tank data for player '{var8}' between {var2} and {var3}...\n")
+        replayVersion = data.get('replayVersion') # a string of the replay version
 
+        if replayVersion != '1.0.2':
+            print("Replay version not supported")
+            input("Press enter to exit...")
+            return
+
+        print(f"\nRandomizing tank data for player '{var8}' between {var2} and {var3}...\n")
+        
         if idPool == {}:
             index = 2
             # Loop through eventBuffer to find idPool entries
