@@ -4,7 +4,7 @@ Warning: Might cause seizures
 Python (Tested on 3.13.7)
 
 # Usage
-1. Run Da-Funny.bat (Might be reduntant, but I'd like to have .bat files).
+1. Run Da-Funny.bat or randomizer.py.
 2. Select decode.
 3. Enter the file name, Must also include the `.btnks` extention.
 5. Then choose if you want to pretty-print.
