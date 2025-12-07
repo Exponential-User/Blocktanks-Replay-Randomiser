@@ -342,7 +342,7 @@ def map_to_angle(v):
         v = 50
     elif v > 230:
         v = 230
-    return 2 * (v - 50)
+    return (v * 2) - 280
     
 def getTankSpeed():
     with open('output.json', 'r', encoding='utf-8') as f:
@@ -407,3 +407,4 @@ if __name__ == "__main__":
     if len(sys.argv) <= 1:
 
         input("Press Enter to exit/continue...")
+
