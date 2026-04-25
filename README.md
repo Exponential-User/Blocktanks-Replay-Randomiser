@@ -18,6 +18,12 @@ Python (Tested on 3.13.7)
 
 And it's done, now you can import your randomized replay to Blocktanks.net, Make sure you have `Record Match Replays` enabled to import replays.
 
+### What it can do
+It can:
+* Randomizes a specified tank's position
+* Randomizes a specified tank's arm angle
+* Edit the map
+
 ### Known Issues
 1. Same user ID's
 

@@ -2,9 +2,9 @@
 setlocal EnableDelayedExpansion
 
 cd /D "%~dp0"
-title Options list
 
 :begin
+title Options list
 color 0F
 cls
 echo.
@@ -16,21 +16,36 @@ echo [2] Randomize
 echo.
 echo [3] Encode
 echo.
-echo [4] Acqiure Usernames and Ids
+echo [4] Acquire Usernames and Ids
 echo.
-echo [5] exit
+echo [5] Open the Map Editor
+echo.
+echo [6] exit
 echo.
 
-choice /c 12345 /n /m "Enter your choice:"
-if errorlevel 5 goto :end
+choice /c 123456 /n /m "Enter your choice:"
+if errorlevel 6 goto :end
 
-if errorlevel 4 (
+if errorlevel 5 (
+    title Map Editor
     cls
     echo.
-    echo ^(4^) Acqiure Usernames and Ids
+    echo ^(5^) Open the Map Editor
     echo.
-    echo SENT: * * * acqiureUsernames * * * * *
-    python randomizer.py None None None acqiureUsernames None None None None None
+    echo SENT: * * * editMap * * * * *
+    python randomizer.py None None None editMap None None None None None
+    pause
+    goto begin
+)
+
+if errorlevel 4 (
+    title Acquire Usernames and Ids
+    cls
+    echo.
+    echo ^(4^) Acquire Usernames and Ids
+    echo.
+    echo SENT: * * * acquireUsernames * * * * *
+    python randomizer.py None None None acquireUsernames None None None None None
     set "filename3=userlist.txt"
     pause
     goto begin
@@ -39,8 +54,8 @@ if errorlevel 4 (
 if errorlevel 3 (
     cls
     echo.
-    echo ^(2^) Encode
-    set /p filename1="Enter the filename (without .btnks extension): "
+    echo ^(3^) Encode
+    set /p filename1="Enter the output filename (without .btnks extension): "
     if "!filename1!"=="" goto :error
     if /I "!filename1:~-6!"==".btnks" goto :error
     echo.
@@ -58,13 +73,13 @@ if errorlevel 2 (
         goto begin
     )
     echo.
-    echo ^(3^) Randomize
-    set /p option="Use data (Still testing), or bullets (bullets not yet implemented): "
+    echo ^(2^) Randomize
+    set /p option="Use data, or bullets (bullets not yet implemented): "
     if /I "!option!" EQU "data" (
         echo.
         echo Usernames and IDs from userlist.txt:
         if not exist "userlist.txt" (
-            echo Error: userlist.txt not found. Please run the Acqiure Usernames and Ids option first to generate this file.
+            echo Error: userlist.txt not found. Please run the Acquire Usernames and Ids option first to generate this file.
             pause
             goto begin
         ) else (
@@ -116,7 +131,7 @@ if errorlevel 1 (
     cls
     echo.
     echo ^(1^) Decode
-    set /p "filename2=Enter the filename (with .btnks extension): "
+    set /p "filename2=Enter the target filename (with .btnks extension): "
     set /p "prepri=Pretty-print the JSON output? (yes/no [default: no]): "
     if /I "!filename2:~-6!" NEQ ".btnks" goto :error
     if /I "!prepri!" NEQ "yes" if /I "!prepri!" NEQ "no" set "prepri=no"

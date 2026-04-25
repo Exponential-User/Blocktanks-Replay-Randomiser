@@ -1,5 +1,15 @@
-import json, random, sys, zlib
-# Usage: run the Da-Funny.bat file and follow the prompts, or just this script.
+import json, random, sys, zlib, subprocess as sp, os
+from pathlib import Path
+# Usage: run the Da-Funny.bat file and follow the prompts or run this script.
+
+# TODO:
+# Add the ability to randomize flags, and maybe payloads and bullets?
+try:
+    os.chdir(Path(__file__).resolve().parent)
+except Exception as e:
+    print(f"Could not set current working directory to current file path\n\n{e}")
+    input("Press Enter to exit...")
+    sys.exit()
 
 idPool = {}  # Dictionary to store usernames and their corresponding IDs
 once = False # A Basic switch
@@ -9,7 +19,7 @@ if not len(sys.argv) <= 1:
     var1 = sys.argv[1]  # options for randomization (string | required for randomizer)*
     var2 = int(sys.argv[2]) if sys.argv[2].isdigit() and 0 <= int(sys.argv[2]) < 255 else 0  # min random (int | required for randomizer)*
     var3 = int(sys.argv[3]) if sys.argv[3].isdigit() and 0 < int(sys.argv[3]) < 255 else 255  # max random (int | required for randomizer)*
-    var4 = sys.argv[4]  # encode/decode/randomize/acqiureUsernames/getMinMax (string | Required)*
+    var4 = sys.argv[4]  # encode/decode/randomize/acquireUsernames/getMinMax (string | Required)*
     var5 = sys.argv[5]  # pretty print (string [yes/no] | Optional)
     var6 = sys.argv[6]  # filename (string | Required for encoder/decoder)*
     var7 = sys.argv[7]  # chosen value to randomise (int | Optional)
@@ -24,7 +34,7 @@ def encoder(x): # x = filename
         x
     except (NameError, ValueError):
         print("Warning: Missing or invalid arguments for encoder, restarting input prompts...\n")
-        x = input("IMPORTANT: JSON must be in the same directory as this encoder.\n\nEnter the output .btnks file name (without extension): ")
+        x = input("IMPORTANT: JSON must be in the same directory as this encoder.\n\nEnter the output .btnks file name: ")
 
     # Ensure the filename ends with .btnks
     if not x.endswith('.btnks'):
@@ -55,8 +65,12 @@ def decoder(x, x2):  # x = filename, x2 = pretty print (yes/no)
         x2
     except (NameError, ValueError):
         print("Warning: Missing or invalid arguments for decoder, restarting input prompts...\n")
-        x = input("IMPORTANT: The .btnks file must be in the same directory as this decoder.\n\nEnter the .btnks file name (with extension): ")
+        x = input("IMPORTANT: The .btnks file must be in the same directory as this decoder.\n\nEnter the target .btnks file name: ")
         x2 = input("Do you want to pretty-print the JSON output? (yes/no): ").strip().lower()
+
+    # Ensure the filename ends with .btnks
+    if not x.endswith('.btnks'):
+        x += '.btnks'
 
     # Step 1: Read the compressed file
     with open(x, 'rb') as f:
@@ -82,7 +96,7 @@ def randomizer(var1, var2, var3, var7, var8):
     with open('output.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    acqiureUsernames(False)  # make sure usernames were not the previous ones
+    acquireUsernames(False)  # make sure usernames were not the previous ones
 
     try:
         var1
@@ -92,7 +106,7 @@ def randomizer(var1, var2, var3, var7, var8):
     except (NameError, ValueError):
         print("Warning: Missing or invalid arguments for randomizer, restarting input prompts...\n")
         var1 = input("Enter function option (data, bullets): ").strip().lower()
-        acqiureUsernames(True)
+        acquireUsernames(True)
         var8 = input("Enter the player name or ID to modify: ").strip().lower()
         var2 = int(input("Enter minimum random value (negative integer): "))
         var3 = int(input("Enter maximum random value (positive integer): "))
@@ -204,7 +218,7 @@ def randomizer(var1, var2, var3, var7, var8):
 
     print("Randomization complete. Check output.json for results.")
     
-def acqiureUsernames(switch):
+def acquireUsernames(switch):
     index = 2
 
     # Read the JSON file
@@ -231,9 +245,6 @@ def acqiureUsernames(switch):
         print(f"Replay host (Creator) is: {replayHost}")
         print(f"Reply host ID is: {validateHostID(replayHost, replayHost)}\n")
 
-    # print("---- MAP TEST ----")
-    # getMap()
-
 # Helper functions
 def validateHostID(Host, user):  # Host = replayHost string, user = input username or id
     if Host in idPool:
@@ -242,25 +253,8 @@ def validateHostID(Host, user):  # Host = replayHost string, user = input userna
             return host_id
     return None
 
-def getMap():  # unused helper function
-    with open('output.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-
-    map_data = data.get('eventBuffer', [])[0]['data']['map'].get('map', 'Unknown')
-    mapColumns = 0
-    mapRows = 0
-    for entry in map_data:
-        # loop through each array in map and get dimensions by X and Y
-        if isinstance(entry, list):
-            mapRows += 1
-            mapColumns = max(mapColumns, len(entry))
-    
-    # pretty print the map and its dimensions
-    # mapString = '\n'.join([' '.join(map(str, row)) for row in map_data])
-
-    # print(f"Map:\n{mapString}")
-    # print(f"Map rows: {mapRows}, Map columns: {mapColumns}")
-    return mapRows, mapColumns
+def editMap():
+    sp.run(["python", "mapEditor.py"], cwd=Path(__file__).resolve().parent)
 
 def getMinMax(v, randMin, randMax, oneNum):
     min = 0
@@ -354,12 +348,13 @@ def getTankSpeed():
 # main executions
 def backupMain():
     while True:
-        choice = input("Choose an option:\n1. Encode\n2. Decode\n3. Randomize\n4. Acquire Usernames (Optional)\n5. Exit\nEnter choice (1-5): ").strip()
+        choice = input("Choose an option:\n1. Encode\n2. Decode\n3. Randomize\n4. Acquire Usernames (Optional)\n5. Open the Map Editor\n6. Exit\nEnter choice (1-6): ").strip()
+
         if choice == '1':
-            filename = input("Enter the output .btnks file name (without extension): ").strip()
+            filename = input("Enter the output .btnks file name: ").strip()
             encoder(filename)
         elif choice == '2':
-            filename = input("Enter the .btnks file name (with extension): ").strip()
+            filename = input("Enter the target .btnks file name: ").strip()
             prettyPrint = input("Do you want to pretty-print the JSON output? (yes/no): ").strip().lower()
             if prettyPrint not in ['yes', 'no']:
                 print("Invalid input for pretty print. Defaulting to 'no'.")
@@ -370,19 +365,21 @@ def backupMain():
             if v1 == "data":
                 col_input = input("Enter specific column to randomize (1-7) or press Enter to randomize all: ").strip()
                 v4 = int(col_input) if col_input else 0
-                acqiureUsernames(True)
+                acquireUsernames(True)
                 v5 = input("Enter the player name or ID to modify: ").strip().lower()
-                string1 = f" (Min: {getMinMax(v4, None, None, 'min')})"
-                string2 = f" (Max: {getMinMax(v4, None, None, 'max')})"
-            v2 = input(f"Enter minimum random value{string1}: ").strip()
-            v3 = input(f"Enter maximum random value{string2}: ").strip()
+                string1 = f"(Min: {getMinMax(v4, None, None, 'min')})"
+                string2 = f"(Max: {getMinMax(v4, None, None, 'max')})"
+            v2 = input(f"Enter minimum random value {string1}: ").strip()
+            v3 = input(f"Enter maximum random value {string2}: ").strip()
             randomizer(v1, v2, v3, v4, v5)
         elif choice == '4':
-            acqiureUsernames(True)
+            acquireUsernames(True)
         elif choice == '5':
+            editMap()
+        elif choice == '6':
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 4.")
+            print("Invalid choice. Please enter a number between 1 and 6.")
 
 if __name__ == "__main__":
     if var4 == "encode":
@@ -395,16 +392,16 @@ if __name__ == "__main__":
         decoder(var6, var5 if var5 in ['yes', 'no'] else 'no')
     elif var4 == "randomize":
         randomizer(var1, var2, var3, var7, var8)
-    elif var4 == "acqiureUsernames":
-        acqiureUsernames(True)
+    elif var4 == "acquireUsernames":
+        acquireUsernames(True)
     elif var4 == "getMinMax":
         with open('minmax.txt', 'w', encoding='utf-8') as f:
             f.write(f"Min:{getMinMax(int(var7), None, None, 'min')}\nMax:{getMinMax(int(var7), None, None, 'max')}")
+    elif var4 == "editMap":
+        editMap()
     elif len(sys.argv) <= 1:
         backupMain()
     else:
-        print("Invalid arguments for var4. Use 'encode', 'decode', 'randomize' or 'acqiureUsernames'.")
+        print("Invalid arguments for var4. Use 'encode', 'decode', 'randomize', 'editMap'  or 'acquireUsernames'.")
     if len(sys.argv) <= 1:
-
         input("Press Enter to exit/continue...")
-
