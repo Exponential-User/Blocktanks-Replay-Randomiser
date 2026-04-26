@@ -25,7 +25,7 @@ It can:
 * Edit the map
 
 ### Known Issues
-1. Same user ID's
+1. **Same user ID's**
 
     When there is same Id's for two players (When a bot replaces a user, user replaces a bot, user2 replaces user1),
     the column you input will be used on the new user and not the old user.
@@ -38,8 +38,12 @@ It can:
         "[bot] vladmir": 2,
         "[bot] ryan": 3,
         "guest-13653": 3
-    }
-    ```
-    `[BOT] Ryan` gets replaced by `guest-13653` which the values you inputted will be applied to the new user.
+   }
+   ```
+   `[BOT] Ryan` gets replaced by `guest-13653` which the values you inputted will be applied to the new user.
 
-    These duplicate ID's do not show in the userlist.
+   These duplicate ID's do not show in the userlist.
+
+2. **Map Editor is slow on big maps**
+
+   Currently I have not found a fix for it yet.
