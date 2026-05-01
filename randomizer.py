@@ -5,6 +5,7 @@ from pathlib import Path
 # TODO:
 # Add the ability to randomize flags, and maybe payloads and bullets?
 try:
+    # Change current working directory
     os.chdir(Path(__file__).resolve().parent)
 except Exception as e:
     print(f"Could not set current working directory to current file path\n\n{e}")
@@ -145,7 +146,8 @@ def randomizer(var1, var2, var3, var7, var8):
 
         # Get the user Id in idPool and sets var8 to the ID if var8 contains a username
         if not var8.isdecimal():
-            print("Username detected changing to matching user ID")
+            print("Username detected, changing to matching user ID.")
+
             if var8 in idPool:
                 var8 = idPool[var8]
 
@@ -239,10 +241,10 @@ def acquireUsernames(switch):
     with open('userlist.txt', 'w', encoding='utf-8') as f:
         for username, user_id_value in idPool.items():
             f.write(f"{username},{user_id_value}\n")
-            if switch: print(f"Username: {username}, ID: {user_id_value}")
+            if switch: print(f"\tUsername: {username}, ID: {user_id_value}")
 
     if switch:
-        print(f"Replay host (Creator) is: {replayHost}")
+        print(f"\n\nReplay host (Creator) is: {replayHost}")
         print(f"Reply host ID is: {validateHostID(replayHost, replayHost)}\n")
 
 # Helper functions
