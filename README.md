@@ -43,7 +43,3 @@ It can:
    `[BOT] Ryan` gets replaced by `guest-13653` which the values you inputted will be applied to the new user.
 
    These duplicate ID's do not show in the userlist.
-
-2. **Map Editor is slow on big maps**
-
-   Currently I have not found a fix for it yet.
